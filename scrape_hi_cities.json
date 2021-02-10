@@ -1,0 +1,116 @@
+{
+    "1": {
+        "district": null,
+        "id": 1,
+        "short_name": "Altenau",
+        "title": "Altenau"
+    },
+    "10": {
+        "district": null,
+        "id": 10,
+        "short_name": "",
+        "title": "Blankenburg"
+    },
+    "114": {
+        "district": null,
+        "id": 114,
+        "short_name": "",
+        "title": "Osterwieck"
+    },
+    "12": {
+        "district": null,
+        "id": 12,
+        "short_name": "",
+        "title": "Braunlage"
+    },
+    "15": {
+        "district": null,
+        "id": 15,
+        "short_name": "Buntenbock",
+        "title": "Clausthal-Zellerfeld OT Buntenbock"
+    },
+    "18": {
+        "district": null,
+        "id": 18,
+        "short_name": "",
+        "title": "Goslar"
+    },
+    "20": {
+        "district": null,
+        "id": 20,
+        "short_name": "Vienenburg",
+        "title": "Goslar OT Vienenburg"
+    },
+    "22": {
+        "district": null,
+        "id": 22,
+        "short_name": "",
+        "title": "Halberstadt"
+    },
+    "29": {
+        "district": null,
+        "id": 29,
+        "short_name": "Drübeck",
+        "title": "Ilsenburg OT Drübeck"
+    },
+    "35": {
+        "district": null,
+        "id": 35,
+        "short_name": "Wolfshagen",
+        "title": "Langelsheim OT Wolfshagen"
+    },
+    "42": {
+        "district": null,
+        "id": 42,
+        "short_name": "Höhlenort Rübeland",
+        "title": "Oberharz am Brocken OT Höhlenort Rübeland"
+    },
+    "5": {
+        "district": null,
+        "id": 5,
+        "short_name": "Bad Gandersheim",
+        "title": "Bad Gandersheim"
+    },
+    "50": {
+        "district": null,
+        "id": 50,
+        "short_name": "",
+        "title": "Quedlinburg"
+    },
+    "55": {
+        "district": null,
+        "id": 55,
+        "short_name": "",
+        "title": "Sankt Andreasberg"
+    },
+    "6": {
+        "district": null,
+        "id": 6,
+        "short_name": "",
+        "title": "Bad Grund (Harz)"
+    },
+    "60": {
+        "district": null,
+        "id": 60,
+        "short_name": "",
+        "title": "Thale"
+    },
+    "63": {
+        "district": null,
+        "id": 63,
+        "short_name": "",
+        "title": "Walkenried"
+    },
+    "65": {
+        "district": null,
+        "id": 65,
+        "short_name": "",
+        "title": "Wernigerode"
+    },
+    "7": {
+        "district": null,
+        "id": 7,
+        "short_name": "Bad Harzburg",
+        "title": "Bad Harzburg"
+    }
+}

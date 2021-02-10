@@ -1,11 +1,18 @@
 from project import logger
 from project.session_client import SessionClient
+import os
 
 
 class ApiClient:
-    def __init__(self, session: SessionClient, organization_id: int):
-        self.session_client = session
-        self.organization_id = organization_id
+    def __init__(self):
+        self.session_client = SessionClient()
+        self.organization_id = os.getenv("ORGANIZATION_ID")
+
+    def get_categories(self) -> int:
+        logger.debug("Get categories")
+        response = self.session_client.get("/event-categories?per_page=50")
+        pagination = response.json()
+        return pagination["items"]
 
     def insert_organizer(self, name: str) -> int:
         logger.debug(f"Insert organizer {name}")
@@ -29,7 +36,9 @@ class ApiClient:
             return self.insert_organizer(name)
 
         organizer_id = organizer["id"]
-        logger.debug(f"Organizer {organizer_id} {name} already exists. No need to update.")
+        logger.debug(
+            f"Organizer {organizer_id} {name} already exists. No need to update."
+        )
         return organizer_id
 
     def insert_place(self, data: dict) -> int:
@@ -62,6 +71,18 @@ class ApiClient:
         logger.debug(f"Place {place_id} {name} already exists")
         self.update_place(place_id, data)
         return place_id
+
+    def insert_event(self, data: dict) -> int:
+        logger.debug(f"Insert event {data['name']}")
+        response = self.session_client.post(
+            f"/organizations/{self.organization_id}/events", data=data
+        )
+        event = response.json()
+        return event["id"]
+
+    def update_event(self, event_id: int, data: dict):
+        logger.debug(f"Update event {event_id} {data['name']}")
+        self.session_client.put(f"/events/{event_id}", data=data)
 
     def _find_item_in_pagination(self, pagination: dict, name: str) -> dict:
         for item in pagination["items"]:

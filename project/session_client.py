@@ -40,8 +40,10 @@ class SessionClient:
 
     def status_code_or_raise(self, response: Response, code: int):
         logger.debug(f"Response: {response.status_code} {response.content}")
-        if response.status_code != code:
-            raise ValueError(f"Expected {code}, but was {response.status_code}")
+        if response.status_code == code:
+            return
+
+        raise ValueError(f"Expected {code}, but was {response.status_code}")
 
     def get(self, url: str) -> Response:
         url = self.complete_url(url)
@@ -61,6 +63,13 @@ class SessionClient:
         url = self.complete_url(url)
         logger.debug(f"PUT {url}\n{json.dumps(data)}")
         response = self.session.put(url, json=data)
+        self.status_code_or_raise(response, 204)
+        return response
+
+    def delete(self, url: str) -> Response:
+        url = self.complete_url(url)
+        logger.debug(f"DELETE {url}")
+        response = self.session.delete(url)
         self.status_code_or_raise(response, 204)
         return response
 

@@ -84,6 +84,10 @@ class ApiClient:
         logger.debug(f"Update event {event_id} {data['name']}")
         self.session_client.put(f"/events/{event_id}", data=data)
 
+    def delete_event(self, event_id: int):
+        logger.debug(f"Delete event {event_id}")
+        self.session_client.delete(f"/events/{event_id}")
+
     def _find_item_in_pagination(self, pagination: dict, name: str) -> dict:
         for item in pagination["items"]:
             if item["name"] == name:

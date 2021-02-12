@@ -7,7 +7,7 @@ from dateutil.relativedelta import relativedelta
 
 class HarzinfoLoader:
     def __init__(self):
-        self.use_tmp = bool(os.getenv("USE_TMP", "0"))
+        self.use_tmp = os.getenv("USE_TMP", "False").lower() in ["true", "1"]
         self.base_url = "https://www.harzinfo.de"
         self.url = self.base_url + "/?ndssearch=fullsearch&no_cache=1&L=0"
 

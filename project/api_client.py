@@ -14,16 +14,20 @@ class ApiClient:
         pagination = response.json()
         return pagination["items"]
 
-    def insert_organizer(self, name: str) -> int:
-        logger.debug(f"Insert organizer {name}")
-        data = {"name": name}
+    def insert_organizer(self, data: dict) -> int:
+        logger.debug(f"Insert organizer {data['name']}")
         response = self.session_client.post(
             f"/organizations/{self.organization_id}/organizers", data=data
         )
         organizer = response.json()
         return organizer["id"]
 
-    def upsert_organizer(self, name: str) -> int:
+    def update_organizer(self, organizer_id: int, data: dict):
+        logger.debug(f"Update organizer {organizer_id} {data['name']}")
+        self.session_client.put(f"/organizers/{organizer_id}", data=data)
+
+    def upsert_organizer(self, data: dict) -> int:
+        name = data["name"]
         logger.debug(f"Upsert organizer {name}")
         response = self.session_client.get(
             f"/organizations/{self.organization_id}/organizers?name={name}"
@@ -33,7 +37,7 @@ class ApiClient:
 
         if not organizer:
             logger.debug(f"Organizer {name} does not exist")
-            return self.insert_organizer(name)
+            return self.insert_organizer(data)
 
         organizer_id = organizer["id"]
         logger.debug(

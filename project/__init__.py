@@ -13,6 +13,3 @@ r = redis.from_url(os.getenv("REDIS_URL"), charset="utf-8", decode_responses=Tru
 
 berlin_tz = pytz.timezone("Europe/Berlin")
 now = datetime.now(tz=berlin_tz)
-today = datetime(now.year, now.month, now.day, tzinfo=now.tzinfo)
-
-data_path = os.path.join("data")

@@ -1,49 +1,75 @@
 from urllib import request
 import os
-from project import data_path, today
 import json
-from dateutil.relativedelta import relativedelta
+from werkzeug.utils import secure_filename
+from bs4 import BeautifulSoup
 
 
 class HarzinfoLoader:
     def __init__(self):
         self.use_tmp = os.getenv("USE_TMP", "False").lower() in ["true", "1"]
         self.base_url = "https://www.harzinfo.de"
-        self.url = self.base_url + "/?ndssearch=fullsearch&no_cache=1&L=0"
 
-        with open(os.path.join(data_path, "request.json")) as json_file:
-            self.request = json.load(json_file)
+    def load_sitemap(self):
+        xml = self._load_data(
+            self.base_url
+            + "/sitemap.xml?sitemap=ndsdestinationdataevent&cHash=e286f0aef1548b7c25ffdcf9a075ca47"
+        )
+        xmlDict = {}
+        soup = BeautifulSoup(xml, features="html.parser")
+        url_tags = soup.find_all("url")
 
-        with open(os.path.join(data_path, "cities.json")) as json_file:
-            self.cities = json.load(json_file).values()
+        for url_tag in url_tags:
+            xmlDict[url_tag.findNext("loc").text] = url_tag.findNext("lastmod").text
 
-    def load_events(self, city: dict):
+        return xmlDict
+
+    def load_event(self, absolute_url: str):
+        html = self._load_data(absolute_url)
+        soup = BeautifulSoup(html, features="html.parser")
+        ld_json_string = soup.find("script", {"type": "application/ld+json"}).string
+        ld_json_array = json.loads(ld_json_string)
+
+        if len(ld_json_array) == 0:
+            return None
+
+        ld_json = ld_json_array[0]
+        self._strip_ld_json(ld_json)
+
+        if "description" in ld_json:
+            desc_soup = BeautifulSoup(ld_json["description"], features="html.parser")
+            for br in desc_soup.find_all("br"):
+                br.replace_with("\n" + br.text)
+            ld_json["description"] = desc_soup.text
+
+        coordinate_div = soup.find("div", attrs={"data-position": True})
+        if coordinate_div:
+            ld_json["coordinate"] = coordinate_div["data-position"]
+
+        return ld_json
+
+    def _strip_ld_json(self, ld_json: dict) -> dict:
+        for k, v in ld_json.items():
+            if isinstance(v, dict):
+                self._strip_ld_json(v)
+            elif isinstance(v, str):
+                ld_json[k] = v.strip()
+
+    def _load_data(self, absolute_url: str):
         if self.use_tmp:
-            filename = "tmp/hi_%d.json" % (city["id"])
+            filename = f"tmp/{secure_filename(absolute_url)}.txt"
 
             if not os.path.exists(filename):
-                response = self._load_events_from_url(city)
+                response = self._load_data_from_url(absolute_url)
                 with open(filename, "wb") as text_file:
                     text_file.write(response.read())
 
-            with open(filename) as json_file:
-                return json.load(json_file)
+            with open(filename) as data_file:
+                return data_file.read()
         else:
-            response = self._load_events_from_url(city)
-            return json.load(response)
+            response = self._load_data_from_url(absolute_url)
+            return response.read()
 
-    def _load_events_from_url(self, city: dict):
-        body = self.request
-        filter = body["searchFilter"]["ndsdestinationdataevent"]
-        filter["city"] = {str(city["id"]): city["short_name"] or city["title"]}
-
-        start_date = today.strftime("%Y-%m-%d")
-        end_date = (today + relativedelta(years=1)).strftime("%Y-%m-%d")
-        filter["startDate"] = start_date
-        filter["endDate"] = end_date
-        filter["searchWithoutDateBackupStart"] = start_date
-        filter["searchWithoutDateBackupEnd"] = end_date
-
-        req = request.Request(self.url, data=bytes(json.dumps(body), encoding="utf-8"))
-        req.add_header("Content-Type", "application/json")
+    def _load_data_from_url(self, absolute_url: str):
+        req = request.Request(absolute_url)
         return request.urlopen(req)

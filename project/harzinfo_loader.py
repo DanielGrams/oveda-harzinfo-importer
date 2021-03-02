@@ -1,8 +1,9 @@
-from urllib import request
-import os
 import json
-from werkzeug.utils import secure_filename
+import os
+from urllib import request
+
 from bs4 import BeautifulSoup
+from werkzeug.utils import secure_filename
 
 
 class HarzinfoLoader:

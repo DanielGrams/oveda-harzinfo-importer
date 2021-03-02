@@ -1,9 +1,11 @@
-from project import logger, r
-from authlib.integrations.requests_client import OAuth2Session
-from requests import Response
-from typing import Any
 import json
 import os
+from typing import Any
+
+from authlib.integrations.requests_client import OAuth2Session
+from requests import Response
+
+from project import logger, r
 
 
 def _update_token(token, refresh_token=None, access_token=None):

@@ -1,6 +1,7 @@
+import os
+
 from project import logger
 from project.session_client import SessionClient
-import os
 
 
 class ApiClient:

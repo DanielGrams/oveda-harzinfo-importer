@@ -1,9 +1,10 @@
 import logging
-import redis
-import pytz
 import os
 from datetime import datetime
 from urllib.parse import urlparse
+
+import pytz
+import redis
 
 logging.basicConfig(format="%(asctime)s | %(name)s | %(levelname)s | %(message)s")
 logger = logging.getLogger(__name__)

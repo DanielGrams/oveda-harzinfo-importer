@@ -7,6 +7,7 @@ cffi==1.14.4
 chardet==4.0.0
 click==7.1.2
 cryptography==3.3.1
+decorator==4.4.2
 flake8==3.8.4
 idna==2.10
 isort==5.7.0
@@ -27,4 +28,5 @@ toml==0.10.2
 typed-ast==1.4.2
 typing-extensions==3.7.4.3
 urllib3==1.26.3
+validators==0.18.2
 Werkzeug==1.0.1

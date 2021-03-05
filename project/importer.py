@@ -2,6 +2,8 @@ import datetime
 import hashlib
 import json
 
+import validators
+
 from project import logger, now, r
 from project.api_client import ApiClient
 from project.harzinfo_loader import HarzinfoLoader
@@ -111,6 +113,11 @@ class Importer:
             r.hset("url_mapping", url, "nodata")
             return 0
 
+        if not self._is_url(item["url"]):
+            logger.warn("Invalid url.")
+            r.hset("url_mapping", url, "invalidurl")
+            return 0
+
         # Check for duplicates
         uid = item["identifier"][0]
 
@@ -144,10 +151,13 @@ class Importer:
         event = dict()
         event["external_link"] = item["url"]
         event["name"] = item["name"]
-        event["description"] = item["description"]
         event["start"] = item["startDate"]
         event["place"] = {"id": place_id}
         event["organizer"] = {"id": organizer_id}
+
+        if "description" in item:
+            event["description"] = item["description"]
+
         self._import_event_status(event, item)
         self._add_categories(event, item)
         self._add_tags(event, item)
@@ -360,3 +370,6 @@ class Importer:
     def _hash_dict(self, item: dict):
         item_str = json.dumps(item, sort_keys=True, ensure_ascii=True)
         return hashlib.md5(item_str.encode("utf-8")).hexdigest()
+
+    def _is_url(self, url: str) -> bool:
+        return validators.url(url)

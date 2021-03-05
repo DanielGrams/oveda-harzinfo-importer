@@ -35,7 +35,7 @@ class HarzinfoLoader:
             return None
 
         ld_json = ld_json_array[0]
-        self._strip_ld_json(ld_json)
+        ld_json = self._strip_ld_json(ld_json)
 
         if "description" in ld_json:
             desc_soup = BeautifulSoup(ld_json["description"], features="html.parser")
@@ -49,12 +49,23 @@ class HarzinfoLoader:
 
         return ld_json
 
-    def _strip_ld_json(self, ld_json: dict) -> dict:
-        for k, v in ld_json.items():
-            if isinstance(v, dict):
-                self._strip_ld_json(v)
-            elif isinstance(v, str):
-                ld_json[k] = v.strip()
+    def _strip_ld_json(self, value: any) -> any:
+        if isinstance(value, str):
+            return value.strip()
+
+        if isinstance(value, dict):
+            result = dict()
+            for k, v in value.items():
+                result[k] = self._strip_ld_json(v)
+            return result
+
+        if isinstance(value, list):
+            result = list()
+            for elem in value:
+                result.append(self._strip_ld_json(elem))
+            return result
+
+        return value
 
     def _load_data(self, absolute_url: str):
         if self.use_tmp:

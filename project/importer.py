@@ -208,7 +208,7 @@ class Importer:
         organizer = dict()
         organizer["name"] = organizer_name
 
-        if "url" in organizer_item:
+        if "url" in organizer_item and self._is_url(organizer_item["url"]):
             organizer["url"] = organizer_item["url"]
 
         if "email" in organizer_item:
@@ -341,6 +341,7 @@ class Importer:
         for uid, event_id_str in self.stored_event_mapping.items():
             if uid in self.uids_in_run:
                 continue
+
             self.api_client.delete_event(int(event_id_str))
             r.hdel("event_mapping", uid)
             r.hdel("event_hashes", uid)

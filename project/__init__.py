@@ -6,9 +6,11 @@ from urllib.parse import urlparse
 import pytz
 import redis
 
-logging.basicConfig(format="%(asctime)s | %(name)s | %(levelname)s | %(message)s")
+log_level = os.getenv("LOG_LEVEL", "ERROR").upper()
+logging.basicConfig(
+    level=log_level, format="%(asctime)s | %(name)s | %(levelname)s | %(message)s"
+)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 r = redis.from_url(os.getenv("REDIS_URL"), charset="utf-8", decode_responses=True)
 

@@ -31,6 +31,9 @@ class HarzinfoLoader:
         ld_json_string = soup.find("script", {"type": "application/ld+json"}).string
         ld_json_array = json.loads(ld_json_string)
 
+        if not ld_json_array:
+            return None
+
         if len(ld_json_array) == 0:
             return None
 

@@ -158,6 +158,7 @@ class Importer:
         if "description" in item:
             event["description"] = item["description"]
 
+        self._import_event_photo(event, item)
         self._import_event_status(event, item)
         self._add_categories(event, item)
         self._add_tags(event, item)
@@ -176,6 +177,27 @@ class Importer:
             self.new_event_count = self.new_event_count + 1
 
         return event_id
+
+    def _import_event_photo(self, event, item) -> str:
+        if "image" not in item:
+            return
+
+        image = item["image"]
+        first_image = image[0] if isinstance(image, list) else image
+
+        if not isinstance(first_image, dict):
+            return
+
+        if "url" not in first_image:
+            return
+
+        photo = dict()
+        photo["image_url"] = first_image["url"]
+
+        if "contributor" in first_image:
+            photo["copyright_text"] = first_image["contributor"]
+
+        event["photo"] = photo
 
     def _import_event_status(self, event, item: dict) -> str:
         if "eventStatus" in item:

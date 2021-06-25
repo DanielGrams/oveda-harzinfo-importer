@@ -1,7 +1,7 @@
 import os
 
 from project import logger
-from project.session_client import SessionClient
+from project.session_client import SessionClient, UnprocessableEntityError
 
 
 class ApiClient:
@@ -79,15 +79,36 @@ class ApiClient:
 
     def insert_event(self, data: dict) -> int:
         logger.debug(f"Insert event {data['name']}")
-        response = self.session_client.post(
-            f"/organizations/{self.organization_id}/events", data=data
-        )
+
+        try:
+            response = self.session_client.post(
+                f"/organizations/{self.organization_id}/events", data=data
+            )
+        except UnprocessableEntityError as e:
+            if e.json["errors"][0]["field"] == "photo":
+                logger.warn("Retrying without photo")
+                del data["photo"]
+                response = self.session_client.post(
+                    f"/organizations/{self.organization_id}/events", data=data
+                )
+            else:
+                raise
+
         event = response.json()
         return event["id"]
 
     def update_event(self, event_id: int, data: dict):
         logger.debug(f"Update event {event_id} {data['name']}")
-        self.session_client.put(f"/events/{event_id}", data=data)
+
+        try:
+            self.session_client.put(f"/events/{event_id}", data=data)
+        except UnprocessableEntityError as e:
+            if e.json["errors"][0]["field"] == "photo":
+                logger.warn("Retrying without photo")
+                del data["photo"]
+                self.session_client.put(f"/events/{event_id}", data=data)
+            else:
+                raise
 
     def delete_event(self, event_id: int):
         logger.debug(f"Delete event {event_id}")

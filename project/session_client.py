@@ -20,6 +20,12 @@ def _update_token(token, refresh_token=None, access_token=None):
         r.hdel("token", "expires_in")
 
 
+class UnprocessableEntityError(ValueError):
+    def __init__(self, message, response):
+        self.json = response.json()
+        super().__init__(message)
+
+
 class SessionClient:
     def __init__(self):
         self.base_url = os.getenv("API_URL") + "/api/v1"
@@ -45,7 +51,12 @@ class SessionClient:
         if response.status_code == code:
             return
 
-        raise ValueError(f"Expected {code}, but was {response.status_code}")
+        msg = f"Expected {code}, but was {response.status_code}"
+
+        if response.status_code == 422:
+            raise UnprocessableEntityError(msg, response)
+
+        raise ValueError(msg, response)
 
     def get(self, url: str) -> Response:
         url = self.complete_url(url)

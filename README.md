@@ -11,3 +11,10 @@ docker run --name oveda-harzinfo danielgrams/oveda-harzinfo:latest
 ```sh
 docker exec oveda-harzinfo python import.py
 ```
+
+## Prepare Redis to re-import all
+
+```sh
+del event_hashes
+del last_run
+```

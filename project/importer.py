@@ -183,6 +183,10 @@ class Importer:
             return
 
         image = item["image"]
+
+        if isinstance(image, list) and len(image) == 0:
+            return
+
         first_image = image[0] if isinstance(image, list) else image
 
         if not isinstance(first_image, dict):
